@@ -126,6 +126,11 @@ public class GCMMessageHandler extends DefaultMessageHandler {
         return null;
       }
 
+      // Don't reply to ACKs
+      Object msgType = jsonObject.get(JSON_MESSAGE_TYPE);
+      if (msgType != null && msgType.equals(JSON_ACK))
+        return null;
+
       Stanza outboundStanza = createAckMessageStanza(stanza, jsonObject);
       MessageRelayJobImpl messageRelayJob = new MessageRelayJobImpl(ThreadLocalRandom.current().nextLong(ACK_DELAY_MS), from, outboundStanza, serverRuntimeContext);
       serviceContext.getMessageRelayManager().addJob(messageRelayJob);
